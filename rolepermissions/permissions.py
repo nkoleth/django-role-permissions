@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from django.contrib.auth.models import Permission
+
 from rolepermissions.exceptions import (
     RolePermissionScopeException, CheckerNotRegistered)
 from rolepermissions.roles import get_user_roles, get_or_create_permission
@@ -43,15 +45,16 @@ def available_perm_status(user):
     Get a boolean map of the permissions available to a user
     based on that user's roles.
     """
-    roles = get_user_roles(user)
     permission_hash = {}
+    roles = get_user_roles(user)
+    permissions = set(user.user_permissions.all()) | set(Permission.objects.filter(group__user=user))
 
     for role in roles:
         permission_names = role.permission_names_list()
 
         for permission_name in permission_names:
             permission_hash[permission_name] = get_permission(
-                permission_name) in user.user_permissions.all()
+                permission_name) in permissions
 
     return permission_hash
 
