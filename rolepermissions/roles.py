@@ -54,6 +54,10 @@ class AbstractUserRole(object):
         return camelToSnake(cls.__name__)
 
     @classmethod
+    def get_display_name(cls):
+        return getattr(cls, 'role_display_name', cls.__name__)
+
+    @classmethod
     def assign_role_to_user(cls, user):
         """
         Assign this role to a user.
