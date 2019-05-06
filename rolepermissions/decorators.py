@@ -6,7 +6,10 @@ from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.contrib.auth.views import redirect_to_login as dj_redirect_to_login
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    from django.urls import reverse
 
 from rolepermissions.checkers import has_role, has_permission
 from rolepermissions.utils import user_is_authenticated
