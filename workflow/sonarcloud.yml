@@ -1,0 +1,30 @@
+name: sonarcloud 
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Run test
+        run: |
+            python3 pie.py build
+            python3 pie.py db.start
+            python3 pie.py test
+            python3 pie.py style
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          with:
+          projectBaseDir: django-role-permissions/
+      - name: Run cleanup
+        run: python3 pie.py destroy
